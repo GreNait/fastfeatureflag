@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pyflag"
-version = "0.0.0"
+version = "0.0.1"
 description = "light-weight feature flags"
 authors = ["GreNait"]
 readme = "README.md"
