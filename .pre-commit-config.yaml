@@ -46,3 +46,9 @@ repos:
         type: [python]
         pass_filenames: false
         stages: [push]
+    -   id: dagger-pipeline
+        name: pipeline-unittests
+        entry: python pipeline/ci_unittests.py
+        language: system
+        type: [python]
+        stages: [pre-merge-commit]

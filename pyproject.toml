@@ -14,6 +14,7 @@ pytest = "^7.4.0"
 commitizen = "^3.6.0"
 behave = "^1.2.6"
 pytest-watch = "^4.2.0"
+dagger-io = "^0.8.1"
 
 [tool.poetry.group.dev.dependencies]
 mypy = "^1.4.1"
