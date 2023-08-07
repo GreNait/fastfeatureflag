@@ -38,11 +38,9 @@ repos:
         language: system
         types: [python]
         pass_filenames: false
-        stages: [commit, push]
-    -   id: behave
-        name: behave
-        entry: behave -q
+        stages: [commit]
+    -   id: dagger-pipeline
+        name: pipeline-unittests
+        entry: python pipeline/ci_unittests.py
         language: system
-        type: [python]
-        pass_filenames: false
         stages: [push]
