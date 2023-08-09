@@ -6,6 +6,7 @@ nav:
     - development_process/workflow.md
     - development_process/pre_commit_pipeline.md
     - development_process/dagger_pipeline.md
+  - features/features.md
   - Changelog: changelog.md
 
 theme:

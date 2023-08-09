@@ -1,7 +1,7 @@
 """This module contains the simple feature flag implementation."""
 
 
-def feature_flag(active: str = "off", **kwargs):
+def feature_flag(active: str = "off", response=None, **kwargs):
     """Feature flag.
 
     The outer wrapper/decorator for the feature flag.
@@ -35,6 +35,9 @@ def feature_flag(active: str = "off", **kwargs):
                 object: The original/input function containing also all options.
             """
             if active == "off":
+                if response:
+                    return response
+
                 raise NotImplementedError("Feature not implemented") from None
 
             if active != "on":

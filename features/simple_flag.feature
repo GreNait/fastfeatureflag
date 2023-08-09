@@ -2,8 +2,10 @@ Feature: Simple feature flag
 
     Add a simple feature flag to a function/method disabling the function/method.
 
-    Scenario: A feature flag is added to disable the function
+    Background:
         Given There is a method called disable
+
+    Scenario: A feature flag is added to disable the function
         When a feature flag feature.flag('off') is added
         Then if I try to call the method a 'NotImplementedError' exception is raised
 

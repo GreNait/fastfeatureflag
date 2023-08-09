@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "pyflag"
+name = "flaggen"
 version = "0.0.1"
 description = "light-weight feature flags"
 authors = ["GreNait"]

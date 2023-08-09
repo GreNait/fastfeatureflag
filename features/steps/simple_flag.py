@@ -7,11 +7,12 @@ from behave.__main__ import main as behave_main
 from flaggen.feature_flag import feature_flag
 
 
+def disable():
+    pass
+
+
 @given("There is a method called disable")
 def step_given_method(context):
-    def disable():
-        pass
-
     context.disable_method = disable
 
 

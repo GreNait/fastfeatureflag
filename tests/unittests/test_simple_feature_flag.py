@@ -51,3 +51,10 @@ def test_as_decorator():
 
     with pytest.raises(NotImplementedError):
         stub_function_decorated()
+
+
+def test_call_with_response_but_deactivated_feature():
+    response = "answer"
+    test_function = feature_flag(active="off", response=response)
+    test_function = test_function(stub_func)
+    assert test_function() == response
