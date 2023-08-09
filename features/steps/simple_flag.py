@@ -4,7 +4,7 @@ import pytest
 from behave import given, then, when
 from behave.__main__ import main as behave_main
 
-from pyflag.feature_flag import feature_flag
+from flaggen.feature_flag import feature_flag
 
 
 @given("There is a method called disable")

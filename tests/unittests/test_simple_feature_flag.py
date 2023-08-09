@@ -1,6 +1,6 @@
 import pytest
 
-from pyflag.feature_flag import feature_flag
+from flaggen.feature_flag import feature_flag
 
 
 def stub_func(response=True, option=None) -> bool:
