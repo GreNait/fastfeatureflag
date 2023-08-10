@@ -11,9 +11,10 @@ def stub_func(response=True, option=None) -> bool:
 
 
 def test_call_with_off():
+    test_function = feature_flag(active="off")
+    test_function = test_function(stub_func)
+
     with pytest.raises(NotImplementedError):
-        test_function = feature_flag(active="off")
-        test_function = test_function(stub_func)
         test_function()
 
 
@@ -24,16 +25,18 @@ def test_call_with_on():
 
 
 def test_call_empty():
+    test_function = feature_flag()
+    test_function = test_function(stub_func)
+
     with pytest.raises(NotImplementedError):
-        test_function = feature_flag()
-        test_function = test_function(stub_func)
         test_function()
 
 
 def test_call_with_wrong_keyword():
+    test_function = feature_flag(active="WrongKeyword")
+    test_function = test_function(stub_func)
+
     with pytest.raises(KeyError):
-        test_function = feature_flag(active="WrongKeyword")
-        test_function = test_function(stub_func)
         test_function()
 
 
