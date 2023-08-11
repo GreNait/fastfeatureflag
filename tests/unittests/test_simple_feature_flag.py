@@ -61,3 +61,13 @@ def test_call_with_response_but_deactivated_feature():
     test_function = feature_flag(active="off", response=response)
     test_function = test_function(stub_func)
     assert test_function() == response
+
+
+def test_feature_active():
+    test_function = feature_flag(active="off")
+    test_function = test_function(stub_func)
+    assert test_function.feature_active == "off"
+
+    test_function = feature_flag(active="on")
+    test_function = test_function(stub_func)
+    assert test_function.feature_active == "on"
