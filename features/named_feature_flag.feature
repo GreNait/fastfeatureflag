@@ -24,7 +24,7 @@ Feature: Named feature flags
         Then method_b is called it raises 'NotImplementedError'
 
     Scenario: Deactivated method with response with both methods
-        Given that method_a has been flagged with feature.flag('off', name='deactivated_with_response', response='I am method a')
-        Given that method_b has been flagged with feature.flag(name='deactivated_with_response', name='I am method b')
-        When method_a is called and returns 'I am method a'
-        Then method_b is called and returns 'I am method b'
+        Given that method_a has been with feature.flag('off', name='deactivated_with_response', response='I am reflagged method a')
+        Given that method_b has been with feature.flag(name='deactivated_with_response', name='I am reflagged method b')
+        When method_a is called and returns 'I am reflagged method a'
+        Then method_b is called and returns 'I am reflagged method b'

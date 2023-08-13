@@ -36,7 +36,7 @@ def given_method_b(context):
 )
 def when_name(context):
     decorated_method_a = feature_flag("off", name="not_working_feature")
-    decorated_method_a = decorated_method_a(method_a())
+    decorated_method_a = decorated_method_a(method_a)
     context.decorated_method_a = decorated_method_a
 
 
@@ -45,7 +45,7 @@ def when_name(context):
 )
 def then_flag_added(context):
     decorated_method_b = feature_flag(name="not_working_feature")
-    decorated_method_b = decorated_method_b(method_b())
+    decorated_method_b = decorated_method_b(method_b)
     context.decorated_method_b = decorated_method_b
 
 
@@ -61,14 +61,14 @@ def then_exception_raised(context):
 @given("that method_a has been flagged with feature.flag('on', name='be_activated')")
 def given_method_a_flagged(context):
     decorated_method_a = feature_flag("on", name="be_activated")
-    decorated_method_a = decorated_method_a(method_a())
+    decorated_method_a = decorated_method_a(method_a)
     context.decorated_method_a = decorated_method_a
 
 
 @given("that method_b has been flagged with feature.flag(name='be_activated')")
 def given_method_b_flagged(context):
     decorated_method_b = feature_flag(name="be_activated")
-    decorated_method_b = decorated_method_b(method_b())
+    decorated_method_b = decorated_method_b(method_b)
     context.decorated_method_b = decorated_method_b
 
 
@@ -93,23 +93,25 @@ def given_method_a_flagged_with_response(context):
         "off", name="deactivated_with_response", response="I am method a"
     )
 
-    decorated_method_a = decorated_method_a(method_a())
+    decorated_method_a = decorated_method_a(method_a)
     context.decorated_method_a = decorated_method_a
 
 
-@given("that method_b has been flagged with feature.flag(name='be_activated')")
+@given(
+    "that method_b has been flagged with feature.flag(name='deactivated_with_response')"
+)
 def given_method_b_flagged_no_response(context):
-    decorated_method_b = feature_flag(name="be_activated")
-    decorated_method_b = decorated_method_b(method_b())
+    decorated_method_b = feature_flag(name="deactivated_with_response")
+    decorated_method_b = decorated_method_b(method_b)
     context.decorated_method_b = decorated_method_b
 
 
-@when("method_a is called and returns 'method_a'")
+@when("method_a is called and returns 'I am method a'")
 def when_method_a_called_with_response(context):
     assert context.decorated_method_a() == "I am method a"
 
 
-@then("method_b is called it returns 'method b'")
+@then("method_b is called it raises 'NotImplementedError'")
 def then_method_b_called_no_response(context):
     with pytest.raises(NotImplementedError):
         context.decorated_method_b()
@@ -119,34 +121,36 @@ def then_method_b_called_no_response(context):
 
 
 @given(
-    "that method_a has been flagged with feature.flag('off', name='deactivated_with_response', response='I am method a')"
+    "that method_a has been with feature.flag('off', name='deactivated_with_response', response='I am reflagged method a')"
 )
 def given_method_a_flagged_both_response(context):
     decorated_method_a = feature_flag(
-        "off", name="deactivated_with_response", response="I am method a"
+        "off", name="deactivated_with_response", response="I am reflagged method a"
     )
 
-    decorated_method_a = decorated_method_a(method_a())
+    decorated_method_a = decorated_method_a(method_a)
     context.decorated_method_a = decorated_method_a
 
 
 @given(
-    "that method_b has been flagged with feature.flag(name='deactivated_with_response', name='I am method b')"
+    "that method_b has been with feature.flag(name='deactivated_with_response', name='I am reflagged method b')"
 )
 def given_method_b_flagged_response(context):
-    decorated_method_b = feature_flag(name="be_activated", response="I am method b")
-    decorated_method_b = decorated_method_b(method_b())
+    decorated_method_b = feature_flag(
+        name="deactivated_with_response", response="I am reflagged method b"
+    )
+    decorated_method_b = decorated_method_b(method_b)
     context.decorated_method_b = decorated_method_b
 
 
-@when("method_a is called and returns 'method_a'")
+@when("method_a is called and returns 'I am reflagged method a'")
 def when_method_a_called_both_response(context):
-    assert context.decorated_method_a() == "I am method a"
+    assert context.decorated_method_a() == "I am reflagged method a"
 
 
-@then("method_b is called and returns 'I am method b'")
+@then("method_b is called and returns 'I am reflagged method b'")
 def then_method_b_called_with_response(context):
-    assert context.decorated_method_a() == "I am method b"
+    assert context.decorated_method_b() == "I am reflagged method b"
 
 
 if __name__ == "__main__":

@@ -15,10 +15,18 @@ async def main():
             .from_("python:3.10-slim-buster")
             .with_directory(path=".", directory=client.host().directory((".")))
             .with_exec(["pip", "install", "."])
-            .with_exec(["pytest", "tests/unittests"])
+            .with_exec(["pytest -v", "tests/unittests"])
         )
 
         unittests = await runner.stdout()
+
+        # passed = unittests.count("PASSED")
+        # failed = unittests.count("FAILED")
+
+        # badge = f"![unittests passed](https://img.shields.io/badge/unittests_passed-{passed}-brightGreen)"
+
+        # with open("../README.md", "r") as file:
+        #     content = file.read()
 
         print(f"Unittest grades: {unittests}")
 
