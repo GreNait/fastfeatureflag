@@ -15,7 +15,7 @@ async def main():
             .from_("python:3.10-slim-buster")
             .with_directory(path=".", directory=client.host().directory((".")))
             .with_exec(["pip", "install", "."])
-            .with_exec(["pytest -v", "tests/unittests"])
+            .with_exec(["pytest", "tests/unittests"])
         )
 
         unittests = await runner.stdout()
