@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "flaggen"
-version = "0.0.1"
+version = "0.1.0"
 description = "light-weight feature flags"
 authors = ["GreNait"]
 readme = "README.md"
