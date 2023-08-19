@@ -1,0 +1,8 @@
+[feature_method_a]
+active="on"
+
+[feature_method_b]
+active="off"
+
+[feature_method_c]
+active="FEATURE_METHOD_C"

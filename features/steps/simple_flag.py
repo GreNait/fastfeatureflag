@@ -18,7 +18,7 @@ def step_given_method(context):
 
 @when("a feature flag feature.flag('off') is added")
 def step_when_flag(context):
-    test_function = feature_flag(active="off")
+    test_function = feature_flag(activation="off")
     test_function = test_function(context.disable_method)
     context.decorated_method = test_function
 
@@ -32,7 +32,7 @@ def step_then_return(context):
 
 @when('a feature flag feature.flag("off", response="{response_in}") is added')
 def step_feature_flag_with_response(context, response_in):
-    test_function = feature_flag(active="off", response=response_in)
+    test_function = feature_flag(activation="off", response=response_in)
     test_function = test_function(context.disable_method)
     context.decorated_method = test_function
 

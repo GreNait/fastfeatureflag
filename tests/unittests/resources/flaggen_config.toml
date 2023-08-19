@@ -1,0 +1,8 @@
+[test_feature_off]
+activation="off"
+
+[test_feature_on]
+activation="on"
+
+[test_feature_environment]
+activation="TEST_ACTIVATION"

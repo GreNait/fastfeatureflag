@@ -16,6 +16,8 @@ behave = "^1.2.6"
 pytest-watch = "^4.2.0"
 dagger-io = "^0.8.1"
 mkdocstrings = {extras = ["python"], version = "^0.22.0"}
+toml = "^0.10.2"
+bpython = "^0.24"
 
 [tool.poetry.group.dev.dependencies]
 mypy = "^1.4.1"

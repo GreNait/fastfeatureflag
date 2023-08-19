@@ -11,7 +11,7 @@ def stub_func(response=True, option=None) -> bool:
 
 
 def test_call_with_off():
-    test_function = feature_flag(active="off")
+    test_function = feature_flag(activation="off")
     test_function = test_function(stub_func)
 
     with pytest.raises(NotImplementedError):
@@ -19,7 +19,7 @@ def test_call_with_off():
 
 
 def test_call_with_on():
-    test_function = feature_flag(active="on")
+    test_function = feature_flag(activation="on")
     test_function = test_function(stub_func)
     assert test_function() is True
 
@@ -33,7 +33,7 @@ def test_call_empty():
 
 
 def test_call_with_wrong_keyword():
-    test_function = feature_flag(active="WrongKeyword")
+    test_function = feature_flag(activation="WrongKeyword")
     test_function = test_function(stub_func)
 
     with pytest.raises(KeyError):
@@ -42,13 +42,13 @@ def test_call_with_wrong_keyword():
 
 def test_call_with_option():
     option = "option_on"
-    test_function = feature_flag(active="on", option=option)
+    test_function = feature_flag(activation="on", option=option)
     test_function = test_function(stub_func)
     assert test_function() == option
 
 
 def test_as_decorator():
-    @feature_flag(active="off")
+    @feature_flag(activation="off")
     def stub_function_decorated():
         return True
 
@@ -58,16 +58,16 @@ def test_as_decorator():
 
 def test_call_with_response_but_deactivated_feature():
     response = "answer"
-    test_function = feature_flag(active="off", response=response)
+    test_function = feature_flag(activation="off", response=response)
     test_function = test_function(stub_func)
     assert test_function() == response
 
 
 def test_feature_active():
-    test_function = feature_flag(active="off")
+    test_function = feature_flag(activation="off")
     test_function = test_function(stub_func)
     assert test_function.feature_active == "off"
 
-    test_function = feature_flag(active="on")
+    test_function = feature_flag(activation="on")
     test_function = test_function(stub_func)
     assert test_function.feature_active == "on"

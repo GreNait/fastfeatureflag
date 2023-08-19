@@ -16,12 +16,13 @@ theme:
 
 plugins:
   - autorefs
-  - mkdocstrings:
-      watch:
-        - flaggen/*
-        - pipeline/*
-        - CHANGELOG.md
-        - README.md
+  - mkdocstrings
+
+watch:
+  - flaggen
+  - pipeline
+  - CHANGELOG.md
+  - README.md
 
 markdown_extensions:
   - pymdownx.snippets
