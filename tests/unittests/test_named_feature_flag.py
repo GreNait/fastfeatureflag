@@ -4,16 +4,9 @@ from flaggen.feature_flag import feature_flag
 from flaggen.feature_schema import Feature
 
 
-def stub_func(response=True, option=None) -> bool:
-    if option:
-        return option
-
-    return response
-
-
-def test_name_feature():
+def test_name_feature(decorated_stub):
     test_function = feature_flag(activation="off", name="test")
-    test_function = test_function(stub_func)
+    test_function = test_function(decorated_stub)
 
     assert test_function.feature_name == "test"
 
@@ -23,12 +16,12 @@ def test_name_feature():
     test_function.clean()
 
 
-def test_name_feature_two_methods():
+def test_name_feature_two_methods(decorated_stub):
     test_function = feature_flag(activation="off", name="test")
-    test_function = test_function(stub_func)
+    test_function = test_function(decorated_stub)
 
     test_function_2 = feature_flag(name="test")
-    test_function_2 = test_function_2(stub_func)
+    test_function_2 = test_function_2(decorated_stub)
 
     assert test_function_2.feature_name == "test"
 
@@ -39,9 +32,9 @@ def test_name_feature_two_methods():
     test_function_2.clean()
 
 
-def test_registere_features_deactive():
+def test_registere_features_deactive(decorated_stub):
     test_function = feature_flag(activation="off", name="test")
-    test_function = test_function(stub_func)
+    test_function = test_function(decorated_stub)
 
     assert (
         Feature(**{"name": "test", "activation": "off"})
@@ -50,7 +43,7 @@ def test_registere_features_deactive():
     assert test_function.feature_active == "off"
 
     test_function_2 = feature_flag(name="test")
-    test_function_2 = test_function_2(stub_func)
+    test_function_2 = test_function_2(decorated_stub)
 
     assert test_function_2.feature_active == "off"
     assert (
@@ -63,9 +56,9 @@ def test_registere_features_deactive():
     test_function_2.clean()
 
 
-def test_registere_features_active():
+def test_registere_features_active(decorated_stub):
     test_function = feature_flag(activation="on", name="test")
-    test_function = test_function(stub_func)
+    test_function = test_function(decorated_stub)
 
     assert (
         Feature(**{"name": "test", "activation": "on"})
@@ -74,7 +67,7 @@ def test_registere_features_active():
     assert test_function.feature_active == "on"
 
     test_function_2 = feature_flag(name="test")
-    test_function_2 = test_function_2(stub_func)
+    test_function_2 = test_function_2(decorated_stub)
 
     assert test_function_2.feature_active == "on"
     assert (
@@ -87,12 +80,12 @@ def test_registere_features_active():
     test_function_2.clean()
 
 
-def test_name_feature_two_methods_active():
+def test_name_feature_two_methods_active(decorated_stub):
     test_function = feature_flag(activation="on", name="test")
-    test_function = test_function(stub_func)
+    test_function = test_function(decorated_stub)
 
     test_function_2 = feature_flag(name="test")
-    test_function_2 = test_function_2(stub_func)
+    test_function_2 = test_function_2(decorated_stub)
 
     assert test_function()
     assert test_function_2()
@@ -101,12 +94,12 @@ def test_name_feature_two_methods_active():
     test_function_2.clean()
 
 
-def test_two_different_feature_names():
+def test_two_different_feature_names(decorated_stub):
     test_function = feature_flag(activation="on", name="test")
-    test_function = test_function(stub_func)
+    test_function = test_function(decorated_stub)
 
     test_function_2 = feature_flag(name="test2")
-    test_function_2 = test_function_2(stub_func)
+    test_function_2 = test_function_2(decorated_stub)
 
     assert test_function.feature_name == "test"
     assert test_function.feature_active == "on"

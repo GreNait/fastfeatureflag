@@ -6,6 +6,7 @@ from typing import Any
 
 import toml
 
+from flaggen.config import Config
 from flaggen.errors import WrongFeatureSchema
 from flaggen.feature_schema import Feature
 
@@ -20,15 +21,60 @@ class _FeatureFlag:
         activation: str = "off",
         response: Any | None = None,
         name: str | None = None,
-        configuration: dict | None = None,
-        configuration_path: pathlib.Path | None = None,
+        feature_configuration: dict | None = None,
+        feature_configuration_path: pathlib.Path | None = None,
+        flaggen_configuration: Config = Config(),
         **kwargs,
     ):
+        self.__flaggen_configuration = flaggen_configuration
         self._func = func
-        self._activation = activation
         self._response = response
         self._options = kwargs
 
+        self.__check_for_configuration(
+            configuration=feature_configuration,
+            configuration_path=feature_configuration_path,
+        )
+        self.__check_name(activation=activation, name=name)
+
+    def __call__(self, *args: Any, **kwargs: Any) -> Any:
+        return self._decorated_function(*args, **kwargs)
+
+    def __check_name(self, activation: str, name: str):
+        """Check for name
+
+        Check if feature with given name is registered. If not, register
+        new feature with name and activation.
+
+        Args:
+            activation (str): Activation. on|off
+            name (str): Name of the feature
+        """
+        if name:
+            if self.is_registered(name):
+                feature = self.find_feature(name)
+                self._name = feature.name
+                self._activation = feature.activation
+
+            else:
+                self.register(name=name, feature_content={"activation": activation})
+                self._name = name
+                self._activation = activation
+        else:
+            self._activation = activation
+
+    def __check_for_configuration(
+        self, configuration: dict, configuration_path: pathlib.Path
+    ):
+        """Check if configuration is available
+
+        Check if a configuration is either available as dict or from a config file.
+        If so, load the configuration.
+
+        Args:
+            configuration (dict): Configuration as dict
+            configuration_path (pathlib.Path): Path to configuration
+        """
         if configuration:
             self._load_configuration(configuration)
 
@@ -37,26 +83,18 @@ class _FeatureFlag:
             self._configuration_path = configuration_path
 
         if configuration_path is None and configuration is None:
-            path_to_default_config = pathlib.Path().cwd() / "flaggen_config.toml"
-            if path_to_default_config.exists():
-                self._load_configuration_from_file(path=path_to_default_config)
-                self._configuration_path = path_to_default_config
-            else:
-                self._configuration = None
-                self._configuration_path = None
+            self.__check_config_at_default_location()
 
-        if name:
-            if self.is_registered(name):
-                feature = self.find_feature(name)
-                self._activation = feature.activation
-
-            else:
-                self.register(name=name, feature_content={"activation": activation})
-
-            self._name = name
-
-    def __call__(self, *args: Any, **kwargs: Any) -> Any:
-        return self._decorated_function(*args, **kwargs)
+    def __check_config_at_default_location(self):
+        path_to_default_config = (
+            self.__flaggen_configuration.PATH_TO_DEFAULT_CONFIGURATION
+        )
+        if path_to_default_config.exists():
+            self._load_configuration_from_file(path=path_to_default_config)
+            self._configuration_path = path_to_default_config
+        else:
+            self._configuration = None
+            self._configuration_path = None
 
     def _load_configuration(self, configuration: dict):
         for feature in configuration:
@@ -69,6 +107,32 @@ class _FeatureFlag:
             self._load_configuration(configuration=content)
         else:
             raise FileNotFoundError("Config file not found") from None
+
+    def _decorated_function(self, *args, **kwargs):
+        """Function build with all parameters.
+
+        This function is returned and executes additional steps
+        before the original function (from `decorated_function`)
+        is called.
+
+        Raises:
+            NotImplementedError: Raised if the feature flag is off.
+            KeyError: Raised when the activation keyword is not known.
+
+        Returns:
+            object: The original/input function containing also all options.
+        """
+        if self._activation == "off" or os.environ.get(self._activation) == "off":
+            if self._response:
+                return self._response
+
+            raise NotImplementedError("Feature not implemented") from None
+
+        if self._activation == "on" or os.environ.get(self._activation) == "on":
+            self._options = self._options | kwargs
+            return self._func(*args, **self._options)
+
+        raise KeyError(f"Wrong key. Possible keys: on|off, got: {self._activation}")
 
     @classmethod
     def find_feature(cls, name) -> Feature | None:
@@ -125,32 +189,6 @@ class _FeatureFlag:
     def clean(cls):
         """Empty registered features"""
         cls._registered_features = []
-
-    def _decorated_function(self, *args, **kwargs):
-        """Function build with all parameters.
-
-        This function is returned and executes additional steps
-        before the original function (from `decorated_function`)
-        is called.
-
-        Raises:
-            NotImplementedError: Raised if the feature flag is off.
-            KeyError: Raised when the activation keyword is not known.
-
-        Returns:
-            object: The original/input function containing also all options.
-        """
-        if self._activation == "off" or os.environ.get(self._activation) == "off":
-            if self._response:
-                return self._response
-
-            raise NotImplementedError("Feature not implemented") from None
-
-        if self._activation == "on" or os.environ.get(self._activation) == "on":
-            self._options = self._options | kwargs
-            return self._func(*args, **self._options)
-
-        raise KeyError(f"Wrong key. Possible keys: on|off, got: {self._activation}")
 
     @property
     def feature_name(self) -> str:
@@ -239,8 +277,8 @@ def feature_flag(
             activation=activation,
             response=response,
             name=name,
-            configuration=configuration,
-            configuration_path=configuration_path,
+            feature_configuration=configuration,
+            feature_configuration_path=configuration_path,
             **kwargs,
         )
 

@@ -10,34 +10,29 @@ from flaggen.feature_flag import feature_flag
 from flaggen.feature_schema import Feature
 
 
-def create_default_config():
-    with TestConfig().PATH_TO_DEFAULT_CONFIGURATION.open("w") as file:
-        toml.dump(TestConfig().DEFAULT_CONFIG, file)
+@pytest.fixture
+def default_config():
+    try:
+        with TestConfig().PATH_TO_DEFAULT_CONFIGURATION.open("w") as file:
+            toml.dump(TestConfig().DEFAULT_CONFIG, file)
 
-    yield TestConfig().PATH_TO_DEFAULT_CONFIGURATION, TestConfig().DEFAULT_CONFIG
-
-    TestConfig().PATH_TO_DEFAULT_CONFIGURATION.unlink()
-
-
-def stub_func(response=True, option=None) -> bool:
-    if option:
-        return option
-
-    return response
+        yield TestConfig().PATH_TO_DEFAULT_CONFIGURATION
+    finally:
+        TestConfig().PATH_TO_DEFAULT_CONFIGURATION.unlink()
 
 
-def test_load_config_by_dict():
+def test_load_config_by_dict(decorated_stub):
     test_function = feature_flag(
         name="test_feature_off", configuration=TestConfig().DEFAULT_CONFIG
     )
-    test_function = test_function(stub_func)
+    test_function = test_function(decorated_stub)
 
     assert test_function.configuration == TestConfig().DEFAULT_CONFIG
 
     test_function.clean()
 
 
-def test_update_config_by_dict():
+def test_update_config_by_dict(decorated_stub):
     updated_config = dict(
         TestConfig().DEFAULT_CONFIG, **{"test_feature_update": {"activation": "off"}}
     )
@@ -45,7 +40,7 @@ def test_update_config_by_dict():
     test_function = feature_flag(
         name="test_feature_off", configuration=TestConfig().DEFAULT_CONFIG
     )
-    test_function = test_function(stub_func)
+    test_function = test_function(decorated_stub)
 
     assert test_function.configuration == TestConfig().DEFAULT_CONFIG
     test_function.configuration = updated_config
@@ -56,20 +51,20 @@ def test_update_config_by_dict():
     test_function.clean()
 
 
-def test_load_config_by_file():
+def test_load_config_by_file(decorated_stub):
     test_function = feature_flag(
         name="test_feature_off", configuration_path=TestConfig().PATH_TO_CONFIGURATION
     )
-    test_function = test_function(stub_func)
+    test_function = test_function(decorated_stub)
     assert test_function.configuration_path == TestConfig().PATH_TO_CONFIGURATION
     assert test_function.configuration == TestConfig().DEFAULT_CONFIG
 
     test_function.clean()
 
 
-def test_update_config_by_file():
+def test_update_config_by_file(decorated_stub):
     test_function = feature_flag(name="test_feature_off")
-    test_function = test_function(stub_func)
+    test_function = test_function(decorated_stub)
     assert test_function.configuration is None
 
     test_function.configuration_path = TestConfig().PATH_TO_CONFIGURATION
@@ -79,34 +74,31 @@ def test_update_config_by_file():
     test_function.clean()
 
 
-def test_load_config_by_default_file():
-    for default_config_path, default_config in create_default_config():
-        test_function = feature_flag(
-            name="test_feature_off", configuration_path=default_config_path
-        )
-        test_function = test_function(stub_func)
-        assert test_function.configuration == default_config
+def test_load_config_by_default_file(decorated_stub, default_config):
+    default_config_path = default_config
+    test_function = feature_flag(
+        name="test_feature_off", configuration_path=default_config_path
+    )
+    test_function = test_function(decorated_stub)
+    assert test_function.configuration == TestConfig().DEFAULT_CONFIG
 
-    test_function = feature_flag(name="test_feature_off")
-    test_function = test_function(stub_func)
-    assert test_function.configuration is None
     test_function.clean()
 
 
-def test_no_valid_path_to_config():
+def test_no_valid_path_to_config(decorated_stub):
     with pytest.raises(FileNotFoundError):
         test_function = feature_flag(
             name="test_feature_off", configuration_path=pathlib.Path("does/not/exist")
         )
-        test_function = test_function(stub_func)
+        test_function = test_function(decorated_stub)
         test_function.clean()
 
 
-def test_register_feature_from_config():
+def test_register_feature_from_config(decorated_stub):
     test_function = feature_flag(
         name="test_feature_off", configuration=TestConfig().DEFAULT_CONFIG
     )
-    test_function = test_function(stub_func)
+    test_function = test_function(decorated_stub)
 
     assert len(test_function.registered_features) == 3
     assert (
@@ -117,29 +109,29 @@ def test_register_feature_from_config():
     test_function.clean()
 
 
-def test_register_feature_from_config_file():
-    for default_config_path, default_config in create_default_config():
-        test_function = feature_flag(
-            name="test_feature_off", configuration_path=default_config_path
+def test_register_feature_from_config_file(decorated_stub, default_config):
+    default_config_path = default_config
+    test_function = feature_flag(
+        name="test_feature_off", configuration_path=default_config_path
+    )
+    test_function = test_function(decorated_stub)
+    assert len(test_function.registered_features) == 3
+    assert (
+        Feature(
+            **{
+                "name": "test_feature_off",
+                "activation": "off",
+            }
         )
-        test_function = test_function(stub_func)
-        assert len(test_function.registered_features) == 3
-        assert (
-            Feature(
-                **{
-                    "name": "test_feature_off",
-                    "activation": "off",
-                }
-            )
-            in test_function.registered_features
-        )
+        in test_function.registered_features
+    )
 
     test_function.clean()
 
 
-def test_register_feature_with_setting_new_config():
+def test_register_feature_with_setting_new_config(decorated_stub):
     test_function = feature_flag(name="test_feature_off")
-    test_function = test_function(stub_func)
+    test_function = test_function(decorated_stub)
 
     assert len(test_function.registered_features) == 1
     assert (
@@ -158,24 +150,24 @@ def test_register_feature_with_setting_new_config():
     test_function.clean()
 
 
-def test_use_activation_from_config_on_method():
+def test_use_activation_from_config_on_method(decorated_stub):
     test_function = feature_flag(
         name="test_feature_on", configuration=TestConfig().DEFAULT_CONFIG
     )
-    test_function = test_function(stub_func)
+    test_function = test_function(decorated_stub)
 
     assert test_function() is True
 
     test_function.clean()
 
 
-def test_override_not_config_activation():
+def test_override_not_config_activation(decorated_stub):
     test_function = feature_flag(
         activation="on",
         name="test_feature_off",
         configuration=TestConfig().DEFAULT_CONFIG,
     )
-    test_function = test_function(stub_func)
+    test_function = test_function(decorated_stub)
 
     with pytest.raises(NotImplementedError):
         test_function()
@@ -183,13 +175,13 @@ def test_override_not_config_activation():
     test_function.clean()
 
 
-def test_use_environment_variable_activation():
+def test_use_environment_variable_activation(decorated_stub):
     os.environ["TEST_ACTIVATION"] = "off"
 
     test_function = feature_flag(
         name="test_feature_environment", configuration=TestConfig().DEFAULT_CONFIG
     )
-    test_function = test_function(stub_func)
+    test_function = test_function(decorated_stub)
 
     with pytest.raises(NotImplementedError):
         test_function()
@@ -201,20 +193,20 @@ def test_use_environment_variable_activation():
     test_function = feature_flag(
         name="test_feature_environment", configuration=TestConfig().DEFAULT_CONFIG
     )
-    test_function = test_function(stub_func)
+    test_function = test_function(decorated_stub)
 
     assert test_function() is True
 
     test_function.clean()
 
 
-def test_wrong_keywords_value_in_config():
+def test_wrong_keywords_value_in_config(decorated_stub):
     config = dict(
         **{"feature_key_value_wrong": {"activation": "wrong_value"}},
         **TestConfig().DEFAULT_CONFIG
     )
     test_function = feature_flag(name="feature_key_value_wrong", configuration=config)
-    test_function = test_function(stub_func)
+    test_function = test_function(decorated_stub)
 
     with pytest.raises(KeyError):
         test_function()
@@ -222,9 +214,9 @@ def test_wrong_keywords_value_in_config():
     test_function.clean()
 
 
-def test_config_has_wrong_schema():
+def test_config_has_wrong_schema(decorated_stub):
     with pytest.raises(WrongFeatureSchema):
         test_function = feature_flag(
             name="wrong_schema", configuration=TestConfig().WRONG_SCHEMA
         )
-        test_function = test_function(stub_func)
+        test_function = test_function(decorated_stub)
