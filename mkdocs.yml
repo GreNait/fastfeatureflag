@@ -2,6 +2,7 @@ site_name: Flaggen
 
 nav:
   - Home: index.md
+  - quickstart.md
   - Development process:
     - development_process/workflow.md
     - development_process/pre_commit_pipeline.md
@@ -25,8 +26,12 @@ watch:
   - README.md
 
 markdown_extensions:
+  - admonition
+  - pymdownx.details
   - pymdownx.snippets
   - pymdownx.inlinehilite
+  - pymdownx.tabbed:
+      alternate_style: true
   - pymdownx.highlight:
       anchor_linenums: true
       line_spans: __span

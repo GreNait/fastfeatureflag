@@ -2,12 +2,6 @@ import pytest
 
 from flaggen.feature_flag import feature_flag
 
-# def stub_func(response=True, option=None) -> bool:
-#     if option:
-#         return option
-
-#     return response
-
 
 def test_call_with_off(decorated_stub):
     test_function = feature_flag(activation="off")
@@ -44,6 +38,15 @@ def test_call_with_option(decorated_stub):
     test_function = feature_flag(activation="on", option=option)
     test_function = test_function(decorated_stub)
     assert test_function() == option
+
+
+def test_call_without_parameter():
+    @feature_flag()
+    def test_function():
+        return True
+
+    with pytest.raises(NotImplementedError):
+        test_function()
 
 
 def test_as_decorator(decorated_stub):
