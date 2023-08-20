@@ -1,4 +1,7 @@
 site_name: Flaggen
+repo_url: https://github.com/GreNait/flaggen
+repo_name: grenait/flaggen
+edit_uri: edit/trunk/docs/
 
 nav:
   - Home: index.md
@@ -14,10 +17,27 @@ theme:
   name: material
   features:
     - content.code.copy
+    - navigation.instant
+    - navigation.tracking
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - toc.follow
+    - toc.integrate
+    - navigation.top
+    - header.autohide
+    - navigation.footer
+    - content.action.edit
+  icon:
+    repo: fontawesome/brands/github
+    edit: material/pencil
+    view: material/eye
 
 plugins:
   - autorefs
   - mkdocstrings
+  - git-revision-date-localized:
+      enable_creation_date: true
 
 watch:
   - flaggen
@@ -27,11 +47,15 @@ watch:
 
 markdown_extensions:
   - admonition
+  - footnotes
+  - tables
   - pymdownx.details
   - pymdownx.snippets
   - pymdownx.inlinehilite
   - pymdownx.tabbed:
       alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
   - pymdownx.highlight:
       anchor_linenums: true
       line_spans: __span
@@ -41,3 +65,5 @@ markdown_extensions:
           - name: mermaid
             class: mermaid
             format: !!python/name:pymdownx.superfences.fence_code_format
+  - toc:
+      permalink: true

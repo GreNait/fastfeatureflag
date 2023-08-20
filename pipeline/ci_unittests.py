@@ -5,7 +5,7 @@ import anyio
 import dagger
 
 
-async def main():
+async def unittest():
     """Unittest pipeline defined with Dagger"""
     config = dagger.Config(log_output=sys.stdout)
 
@@ -13,22 +13,22 @@ async def main():
         runner = (
             client.container()
             .from_("python:3.10-slim-buster")
-            .with_directory(path=".", directory=client.host().directory((".")))
-            .with_exec(["pip", "install", "."])
-            .with_exec(["pytest", "tests/unittests"])
+            .with_directory(
+                path=".",
+                directory=client.host().directory((".")),
+                exclude=[".venv", ".vscode"],
+            )
+            .with_exec(["pip", "install", "poetry"])
+            .with_exec(["poetry", "install"])
         )
 
-        unittests = await runner.stdout()
+        unittests = await runner.with_exec(
+            ["poetry", "run", "pytest", "tests/unittests"]
+        ).stdout()
 
-        # passed = unittests.count("PASSED")
-        # failed = unittests.count("FAILED")
+        print(unittests)
 
-        # badge = f"![unittests passed](https://img.shields.io/badge/unittests_passed-{passed}-brightGreen)"
-
-        # with open("../README.md", "r") as file:
-        #     content = file.read()
-
-        print(f"Unittest grades: {unittests}")
+        # runner.with_exec(["mkdocs", "build"])
 
 
-anyio.run(main)
+anyio.run(unittest)
