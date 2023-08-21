@@ -11,8 +11,7 @@ async def build_and_publish_python_package():
     """"""
     async with dagger.Connection(dagger.Config(log_output=sys.stdout)) as client:
         load_dotenv()
-        secret = client.set_secret("pypi_token", os.getenv("PYPI_TOKEN"))
-        print(secret)
+        secret = client.set_secret("PYPI_TOKEN", os.environ.get("PYPI_TOKEN"))
 
         runner = (
             client.container()

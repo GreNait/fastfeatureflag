@@ -1,4 +1,4 @@
 [pylint]
 disable=logging-fstring-interpolation
 fail-under=9
-ignore-paths=^tests/, ^features/, ^pipeline/
+ignore-paths=^tests/, ^features/, ^pipeline/, ^docs/

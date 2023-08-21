@@ -1,5 +1,54 @@
 # Quickstart
 
+# TL;DR
+
+```python
+from fastfeatureflag.feature_flag import feature_flag
+
+@feature_flag(activation="off", response="I responded")
+def not_yet_finished_feature():
+    return True
+
+print(not_yet_finished_feature())
+I responded
+
+@feature_flag("on")
+def not_yet_finished_feature():
+    return True
+not_yet_finished_feature()
+True
+
+@feature_flag("off", name="awesome_feature", response="Not finished yet")
+def awesome_feature_1():
+    return "I am feature 1"
+
+@feature_flag(name="awesome_feature", response="Not finished yet")
+def awesome_feature_2():
+    return "I am feature 2"
+
+awesome_feature_1()
+awesome_feature_2()
+'Not finished yet'
+
+@feature_flag("on", name="awesome_feature")
+def awesome_feature_1():
+    return "I am feature 1"
+
+@feature_flag("off", name="awesome_feature")
+def awesome_feature_2():
+    return "I am feature 2"
+
+awesome_feature_1()
+awesome_feature_2()
+---------------------------------------------------------------------------
+NotImplementedError                       Traceback (most recent call last)
+Cell In[10], line 11
+      7 @feature_flag("off", name="awesome_feature")
+      8 def awesome_feature_2():
+      9     return "I am feature 2"
+---> 11 awesome_feature_1()
+```
+
 ## Import feature flag
 
 ```python
