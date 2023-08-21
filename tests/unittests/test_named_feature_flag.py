@@ -1,7 +1,7 @@
 import pytest
 
-from flaggen.feature_flag import feature_flag
-from flaggen.feature_schema import Feature
+from fastfeatureflag.feature_flag import feature_flag
+from fastfeatureflag.feature_schema import Feature
 
 
 def test_name_feature(decorated_stub):

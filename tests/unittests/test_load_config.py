@@ -4,10 +4,10 @@ import pathlib
 import pytest
 import toml
 
-from flaggen.config import TestConfig
-from flaggen.errors import WrongFeatureSchema
-from flaggen.feature_flag import feature_flag
-from flaggen.feature_schema import Feature
+from fastfeatureflag.config import TestConfig
+from fastfeatureflag.errors import WrongFeatureSchema
+from fastfeatureflag.feature_flag import feature_flag
+from fastfeatureflag.feature_schema import Feature
 
 
 @pytest.fixture

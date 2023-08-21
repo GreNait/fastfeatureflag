@@ -4,7 +4,7 @@ import pytest
 from behave import given, then, when
 from behave.__main__ import main as behave_main
 
-from flaggen.feature_flag import feature_flag
+from fastfeatureflag.feature_flag import feature_flag
 
 
 def method_a():

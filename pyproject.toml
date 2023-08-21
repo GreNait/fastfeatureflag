@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "flaggen"
+name = "fastfeatureflag"
 version = "0.2.0-a0"
 description = "light-weight feature flags"
 authors = ["GreNait"]

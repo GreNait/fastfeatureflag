@@ -1,6 +1,6 @@
-site_name: Flaggen
+site_name: Fast feature flag
 repo_url: https://github.com/GreNait/flaggen
-repo_name: grenait/flaggen
+repo_name: grenait/fastfeatureflag
 edit_uri: edit/trunk/docs/
 
 nav:
@@ -40,7 +40,7 @@ plugins:
       enable_creation_date: true
 
 watch:
-  - flaggen
+  - fastfeatureflag
   - pipeline
   - CHANGELOG.md
   - README.md

@@ -8,7 +8,7 @@ import pathlib
 class Config:
     """Default configuration"""
 
-    PATH_TO_DEFAULT_CONFIGURATION = pathlib.Path().cwd() / "flaggen_config.toml"
+    PATH_TO_DEFAULT_CONFIGURATION = pathlib.Path().cwd() / "fastfeatureflag_config.toml"
 
 
 class TestConfig(Config):
@@ -19,7 +19,7 @@ class TestConfig(Config):
         / "tests"
         / "unittests"
         / "resources"
-        / "flaggen_config.toml"
+        / "fastfeatureflag_config.toml"
     )
 
     DEFAULT_CONFIG = config = {

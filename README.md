@@ -3,5 +3,5 @@
 ## Installation
 
 ```console
-pip install flaggen
+pip install fastfeatureflag
 ```

@@ -6,9 +6,9 @@ from typing import Any
 
 import toml
 
-from flaggen.config import Config
-from flaggen.errors import WrongFeatureSchema
-from flaggen.feature_schema import Feature
+from fastfeatureflag.config import Config
+from fastfeatureflag.errors import WrongFeatureSchema
+from fastfeatureflag.feature_schema import Feature
 
 
 class _FeatureFlag:
@@ -23,10 +23,10 @@ class _FeatureFlag:
         name: str | None = None,
         feature_configuration: dict | None = None,
         feature_configuration_path: pathlib.Path | None = None,
-        flaggen_configuration: Config = Config(),
+        fastfeatureflag_configuration: Config = Config(),
         **kwargs,
     ):
-        self.__flaggen_configuration = flaggen_configuration
+        self.__fastfeatureflag_configuration = fastfeatureflag_configuration
         self._func = func
         self._response = response
         self._options = kwargs
@@ -87,7 +87,7 @@ class _FeatureFlag:
 
     def __check_config_at_default_location(self):
         path_to_default_config = (
-            self.__flaggen_configuration.PATH_TO_DEFAULT_CONFIGURATION
+            self.__fastfeatureflag_configuration.PATH_TO_DEFAULT_CONFIGURATION
         )
         if path_to_default_config.exists():
             self._load_configuration_from_file(path=path_to_default_config)

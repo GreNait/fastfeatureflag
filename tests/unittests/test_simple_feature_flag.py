@@ -1,6 +1,6 @@
 import pytest
 
-from flaggen.feature_flag import feature_flag
+from fastfeatureflag.feature_flag import feature_flag
 
 
 def test_call_with_off(decorated_stub):

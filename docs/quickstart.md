@@ -3,7 +3,7 @@
 ## Import feature flag
 
 ```python
-from flaggen.feature_flag import feature_flag
+from fastfeatureflag.feature_flag import feature_flag
 ```
 
 ## Adding a feature flag
@@ -151,11 +151,11 @@ Activate the feature by changing from `off` to `on` in the activation.
 
 ## Use a configuration file
 
-Handling several features and their activation manually with every flag might lead to conflicting activations and responses. To manage them, you can use a configuration file. As a default, all feature flags are searching for a `flaggen_config.toml` within the current working directory.
+Handling several features and their activation manually with every flag might lead to conflicting activations and responses. To manage them, you can use a configuration file. As a default, all feature flags are searching for a `fastfeatureflag_config.toml` within the current working directory.
 
 Within this configuration file, you can easily specify the features (as `titles`) and their activation.
 
-```toml title="flaggen_config.toml"
+```toml title="fastfeatureflag_config.toml"
 [feature_1]
 activation="on"
 
@@ -165,7 +165,7 @@ activation="off"
 
 This file provides you a central location to switch off/on the features you need. Another great option is the use of environment variables within the activation.
 
-```toml title="flaggen_config.toml"
+```toml title="fastfeatureflag_config.toml"
 [feature_1]
 activation="FEATURE_1"
 ```
