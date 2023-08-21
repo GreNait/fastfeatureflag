@@ -26,7 +26,7 @@ repos:
     rev: 'v1.4.1'
     hooks:
     -   id: mypy
-        files: ^pyflag/
+        files: ^flaggen/
 -   repo: https://github.com/PyCQA/pylint
     rev: 'v3.0.0a6'
     hooks:
