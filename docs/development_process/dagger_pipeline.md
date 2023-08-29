@@ -2,4 +2,4 @@
 
 ![dagger_pipeline_workflow](resources/dagger_pipeline_workflow.drawio.svg)
 
-::: pipeline.ci_unittests
+::: pipeline.ci_main

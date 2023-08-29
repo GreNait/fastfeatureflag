@@ -1,5 +1,3 @@
-[![PyPI version](https://badge.fury.io/py/fastfeatureflag.svg)](https://badge.fury.io/py/fastfeatureflag)![pylint_badge](docs/badges/pylint.svg) ![unittest_badge](docs/badges/unittests.svg) ![mypy](docs/badges/mypy.svg)
-
 FastFeatureFlag is a lightweight tool to generate and use feature flags. Build in python for python. The key components are:
 
 - easy to add feature flag

@@ -7,7 +7,11 @@ from typing import Any
 import toml
 
 from fastfeatureflag.config import Config
-from fastfeatureflag.errors import WrongFeatureSchema
+from fastfeatureflag.errors import (
+    FeatureContentNotDict,
+    FeatureNotRegistered,
+    WrongFeatureSchema,
+)
 from fastfeatureflag.feature_schema import Feature
 
 
@@ -40,7 +44,7 @@ class _FeatureFlag:
     def __call__(self, *args: Any, **kwargs: Any) -> Any:
         return self._decorated_function(*args, **kwargs)
 
-    def __check_name(self, activation: str, name: str):
+    def __check_name(self, activation: str, name: str | None):
         """Check for name
 
         Check if feature with given name is registered. If not, register
@@ -52,7 +56,7 @@ class _FeatureFlag:
         """
         if name:
             if self.is_registered(name):
-                feature = self.find_feature(name)
+                feature = self.get_feature_by_name(name)
                 self._name = feature.name
                 self._activation = feature.activation
 
@@ -64,7 +68,7 @@ class _FeatureFlag:
             self._activation = activation
 
     def __check_for_configuration(
-        self, configuration: dict, configuration_path: pathlib.Path
+        self, configuration: dict | None, configuration_path: pathlib.Path | None
     ):
         """Check if configuration is available
 
@@ -135,7 +139,7 @@ class _FeatureFlag:
         raise KeyError(f"Wrong key. Possible keys: on|off, got: {self._activation}")
 
     @classmethod
-    def find_feature(cls, name) -> Feature | None:
+    def get_feature_by_name(cls, name) -> Feature:
         """Find feature
 
         Find registered feature by name.
@@ -149,10 +153,11 @@ class _FeatureFlag:
         for feature in cls._registered_features:
             if name == feature.name:
                 return feature
-        return None
+
+        raise FeatureNotRegistered
 
     @classmethod
-    def register(cls, name: str, feature_content: dict):
+    def register(cls, name: str, feature_content: dict | Any):
         """Register feature
 
         Register feature by name with activation.
@@ -161,6 +166,11 @@ class _FeatureFlag:
             name (str): Name of the feature
             activation (str): on/off
         """
+        if not isinstance(feature_content, dict):
+            raise FeatureContentNotDict(
+                f"Feature content is type {type(feature_content)}"
+            )
+
         if not cls.is_registered(name):
             try:
                 feature = Feature(name=name, **feature_content)
@@ -181,8 +191,9 @@ class _FeatureFlag:
         Returns:
             bool: True|False
         """
-        if cls.find_feature(name):
-            return True
+        for feature in cls._registered_features:
+            if name == feature.name:
+                return True
         return False
 
     @classmethod
@@ -249,8 +260,8 @@ def feature_flag(
     activation: str = "off",
     response=None,
     name: str | None = None,
-    configuration: dict = None,
-    configuration_path: pathlib.Path = None,
+    configuration: dict | None = None,
+    configuration_path: pathlib.Path | None = None,
     **kwargs,
 ):
     """Feature flag.
