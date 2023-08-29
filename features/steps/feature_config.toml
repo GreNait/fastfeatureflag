@@ -1,8 +1,8 @@
 [feature_method_a]
-active="on"
+activation="on"
 
 [feature_method_b]
-active="off"
+activation="off"
 
 [feature_method_c]
-active="FEATURE_METHOD_C"
+activation="FEATURE_METHOD_C"
