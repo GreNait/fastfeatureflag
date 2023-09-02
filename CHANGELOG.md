@@ -3,13 +3,6 @@
 ### Feat
 
 - **all**: featuer flag configuration by file
-
-## 0.2.0-a1 (2023-08-21)
-
-## 0.2.0-a0 (2023-08-21)
-
-### Feat
-
 - **flaggen**: load configuration
 
 ### Refactor
