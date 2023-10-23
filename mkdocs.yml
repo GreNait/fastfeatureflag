@@ -11,6 +11,7 @@ nav:
     - development_process/pre_commit_pipeline.md
     - development_process/dagger_pipeline.md
   - features/features.md
+  - roadmap.md
   - Changelog: changelog.md
 
 theme:
@@ -46,6 +47,7 @@ watch:
   - README.md
 
 markdown_extensions:
+  - attr_list
   - admonition
   - footnotes
   - tables
@@ -65,5 +67,8 @@ markdown_extensions:
           - name: mermaid
             class: mermaid
             format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.emoji:
+      emoji_index: !!python/name:materialx.emoji.twemoji
+      emoji_generator: !!python/name:materialx.emoji.to_svg
   - toc:
       permalink: true

@@ -19,6 +19,16 @@ async def main():
         await build_and_publish_python_package(runner)
 
 
+# async def black(runner, path_to_project: pathlib.Path) -> bool:
+
+#     formatted = runner.with_exec(["poetry", "run", "black", "-q", str(path_to_project)]).stdout()
+
+#     if formatted:
+#         return True
+
+#     return False
+
+
 async def setup_runner(client):
     return await (
         client.container()

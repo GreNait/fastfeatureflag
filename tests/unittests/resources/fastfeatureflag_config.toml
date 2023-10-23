@@ -6,3 +6,7 @@ activation="on"
 
 [test_feature_environment]
 activation="TEST_ACTIVATION"
+
+[test_shadow_method]
+activation="off"
+shadow="tests.unittests.resources.shadow_test_method.shadow_test_method"

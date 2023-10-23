@@ -5,3 +5,4 @@ from dataclasses import dataclass
 class Feature:
     name: str
     activation: str
+    shadow: str | None = None

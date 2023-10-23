@@ -7,7 +7,7 @@ FastFeatureFlag is a lightweight tool to generate and use feature flags. Build i
 - use environment variables as your on/off switch
 - manage feature flags with a simple toml file
 
-# Installation
+# :tools: Installation
 ---
 
 ```console
@@ -18,7 +18,7 @@ pip install fastfeatureflag
 poetry add fastfeatureflag
 ```
 
-# `flag` away ...
+## :white_flag: `flag` away ...
 ---
 
 !!! tip "take a look at the decorator `feature_flag()` - that is all you need."
@@ -30,5 +30,6 @@ from fastfeatureflag.feature_flag import feature_flag
 def broken_feature():
     return "I am broken"
 
+broken_feature()
 NotImplementedError: Feature not implemented
 ```

@@ -5,6 +5,7 @@ This module holds all relevant configuration parts, splitted for individual use 
 import pathlib
 
 
+# pylint: disable=too-few-public-methods
 class Config:
     """Default configuration"""
 
@@ -26,6 +27,10 @@ class TestConfig(Config):
         "test_feature_off": {"activation": "off"},
         "test_feature_on": {"activation": "on"},
         "test_feature_environment": {"activation": "TEST_ACTIVATION"},
+        "test_shadow_method": {
+            "activation": "off",
+            "shadow": "tests.unittests.resources.shadow_test_method.shadow_test_method",
+        },
     }
 
     WRONG_SCHEMA = {"wrong_schema": {"not_activation": "not_on"}}

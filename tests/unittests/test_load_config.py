@@ -10,17 +10,6 @@ from fastfeatureflag.feature_flag import feature_flag
 from fastfeatureflag.feature_schema import Feature
 
 
-@pytest.fixture
-def default_config():
-    try:
-        with TestConfig().PATH_TO_DEFAULT_CONFIGURATION.open("w") as file:
-            toml.dump(TestConfig().DEFAULT_CONFIG, file)
-
-        yield TestConfig().PATH_TO_DEFAULT_CONFIGURATION
-    finally:
-        TestConfig().PATH_TO_DEFAULT_CONFIGURATION.unlink()
-
-
 def test_load_config_by_dict(decorated_stub):
     test_function = feature_flag(
         name="test_feature_off", configuration=TestConfig().DEFAULT_CONFIG
@@ -100,7 +89,7 @@ def test_register_feature_from_config(decorated_stub):
     )
     test_function = test_function(decorated_stub)
 
-    assert len(test_function.registered_features) == 3
+    assert len(test_function.registered_features) == 4
     assert (
         Feature(**{"name": "test_feature_off", "activation": "off"})
         in test_function.registered_features
@@ -115,7 +104,7 @@ def test_register_feature_from_config_file(decorated_stub, default_config):
         name="test_feature_off", configuration_path=default_config_path
     )
     test_function = test_function(decorated_stub)
-    assert len(test_function.registered_features) == 3
+    assert len(test_function.registered_features) == 4
     assert (
         Feature(
             **{
@@ -145,7 +134,7 @@ def test_register_feature_with_setting_new_config(decorated_stub):
     )
 
     test_function.configuration = TestConfig().DEFAULT_CONFIG
-    assert len(test_function.registered_features) == 3
+    assert len(test_function.registered_features) == 4
 
     test_function.clean()
 
