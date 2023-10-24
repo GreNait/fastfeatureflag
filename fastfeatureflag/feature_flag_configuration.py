@@ -1,3 +1,4 @@
+"""Feature configuration."""
 import importlib
 import os
 import pathlib
@@ -12,72 +13,73 @@ from fastfeatureflag.errors import (
     FeatureNotRegistered,
     WrongFeatureSchema,
 )
-from fastfeatureflag.feature_schema import Feature
+from fastfeatureflag.feature_content import FeatureContent
 from fastfeatureflag.shadow_configuration import ShadowConfiguration
 
 
 class FeatureFlagConfiguration:
-    _registered_features: list[Feature] = []
+    """Feature configuration
+
+    Raises:
+        FileNotFoundError: When file not available
+        NotImplementedError: Raised when feature was disabled,
+            but was still called.
+        KeyError: The configuration key:value pair does not match.
+        CannotRunShadowWithoutFunctionError: The shadow method
+            needs a function to run.
+        FeatureNotRegistered: A feature was requested which
+            hasn't been registered. Perhaps an spelling error?
+        FeatureContentNotDict: The provided feature is not structured
+            as a dict.
+        WrongFeatureSchema: The feature configuration does not comply
+            to the feature schema.
+    """
+
+    _registered_features: list[FeatureContent] = []
     _configuration: dict
 
     def __init__(
         self,
-        func,
-        activation: str = "off",
-        response: Any | None = None,
-        name: str | None = None,
+        feature: FeatureContent,
         shadow: str | None = None,
-        feature_configuration: dict | None = None,
-        feature_configuration_path: pathlib.Path | None = None,
         fastfeatureflag_configuration: Config = Config(),
         **kwargs,
     ):
         self.__fastfeatureflag_configuration = fastfeatureflag_configuration
-        self._func = func
-        self._response = response
         self._options = kwargs
         self._shadow = shadow
 
-        self.__check_for_configuration(
-            configuration=feature_configuration,
-            configuration_path=feature_configuration_path,
-        )
-        self.__check_name(activation=activation, name=name, shadow=shadow)
+        self.__check_for_configuration(feature=feature)
+        self.__check_name(feature=feature)
+        self.__sync_features(feature)
+        self.feature = feature
 
     def __call__(self, *args: Any, **kwargs: Any) -> Any:
-        if self._shadow:
+        if self.feature.shadow:
             return self._shadow_function(*args, **kwargs)
 
         return self._decorated_function(*args, **kwargs)
 
-    def __check_name(self, activation: str, name: str | None, shadow: str | None):
+    def __check_name(
+        self,
+        feature: FeatureContent,
+    ):
         """Check for name
 
         Check if feature with given name is registered. If not, register
         new feature with name and activation.
 
         Args:
-            activation (str): Activation. on|off
-            name (str): Name of the feature
+            feature(FeatureContent): Feature containing all information.
         """
-        if name:
-            if self.is_registered(name):
-                feature = self.get_feature_by_name(name)
-                self._name = feature.name
-                self._activation = feature.activation
-                self._shadow = feature.shadow
+        if feature.name:
+            if not self.is_registered(feature.name):
+                self.register(
+                    name=feature.name,
+                    feature_content={"activation": feature.activation},
+                )
 
-            else:
-                self.register(name=name, feature_content={"activation": activation})
-                self._name = name
-                self._activation = activation
-                self._shadow = shadow
-        else:
-            self._activation = activation
-
-    def __check_for_configuration(
-        self, configuration: dict | None, configuration_path: pathlib.Path | None
-    ):
+    def __check_for_configuration(self, feature: FeatureContent):
         """Check if configuration is available
 
         Check if a configuration is either available as dict or from a config file.
@@ -87,38 +89,66 @@ class FeatureFlagConfiguration:
             configuration (dict): Configuration as dict
             configuration_path (pathlib.Path): Path to configuration
         """
-        if configuration:
-            self._load_configuration(configuration)
+        if feature.configuration:
+            self._load_configuration(feature.configuration)
 
-        if configuration_path:
-            self._load_configuration_from_file(path=configuration_path)
-            self._configuration_path = configuration_path
+        if feature.configuration_path:
+            configuration = self._load_configuration_from_file(
+                path=feature.configuration_path
+            )
+            feature.configuration = configuration
 
-        if configuration_path is None and configuration is None:
-            self.__check_config_at_default_location()
+        if feature.configuration_path is None and feature.configuration is None:
+            (
+                feature.configuration_path,
+                feature.configuration,
+            ) = self.__check_config_at_default_location()
+
+    def __sync_features(self, feature):
+        """Sync features.
+
+        A loaded feature by config file etc. might differ from the
+        decorated feature. They need to be synced.
+
+        The loaded activation overwrites the decorator activation.
+        The decorated function will be saved with the registered feature.
+        The shadow method defined in the config will be used when no other
+            shadow was provided.
+
+        Args:
+            feature (_type_): _description_
+        """
+        if self.is_registered(name=feature.name):
+            registered_feature = self.get_feature_by_name(feature.name)
+            registered_feature.func = feature.func
+            feature.activation = registered_feature.activation
+
+            if not feature.shadow:
+                feature.shadow = registered_feature.shadow
 
     def __check_config_at_default_location(self):
         path_to_default_config = (
             self.__fastfeatureflag_configuration.PATH_TO_DEFAULT_CONFIGURATION
         )
         if path_to_default_config.exists():
-            self._load_configuration_from_file(path=path_to_default_config)
-            self._configuration_path = path_to_default_config
-        else:
-            self._configuration = None
-            self._configuration_path = None
+            return path_to_default_config, self._load_configuration_from_file(
+                path=path_to_default_config
+            )
+
+        return None, None
 
     def _load_configuration(self, configuration: dict):
         for feature in configuration:
             self.register(name=feature, feature_content=configuration.get(feature))
-        self._configuration = configuration
 
-    def _load_configuration_from_file(self, path):
+    def _load_configuration_from_file(self, path) -> dict[str, Any]:
         if path.exists():
             content = toml.load(path)
             self._load_configuration(configuration=content)
         else:
             raise FileNotFoundError("Config file not found") from None
+
+        return content
 
     def _decorated_function(self, *args, **kwargs):
         """Function build with all parameters.
@@ -134,24 +164,32 @@ class FeatureFlagConfiguration:
         Returns:
             object: The original/input function containing also all options.
         """
-        if self._activation == "off" or os.environ.get(self._activation) == "off":
-            if self._response:
-                return self._response
+        if (
+            self.feature.activation == "off"
+            or os.environ.get(self.feature.activation) == "off"
+        ):
+            if self.feature.response:
+                return self.feature.response
 
             raise NotImplementedError("Feature not implemented") from None
 
-        if self._activation == "on" or os.environ.get(self._activation) == "on":
+        if (
+            self.feature.activation == "on"
+            or os.environ.get(self.feature.activation) == "on"
+        ):
             self._options = self._options | kwargs
-            return self._func(*args, **self._options)
+            return self.feature.func(*args, **self._options)
 
-        raise KeyError(f"Wrong key. Possible keys: on|off, got: {self._activation}")
+        raise KeyError(
+            f"Wrong key. Possible keys: on|off, got: {self.feature.activation}"
+        )
 
     def _shadow_function(self, *args, **kwargs):
-        if self._activation == "on":
+        if self.feature.activation == "on":
             return self._decorated_function(*args, **kwargs)
 
-        if isinstance(self._shadow, str):
-            module, function = self._shadow.rsplit(".", 1)
+        if isinstance(self.feature.shadow, str):
+            module, function = self.feature.shadow.rsplit(".", 1)
             run = getattr(importlib.import_module(module), function)
 
         if run is None or not callable(run):
@@ -161,7 +199,7 @@ class FeatureFlagConfiguration:
         return shadow_run.run()
 
     @classmethod
-    def get_feature_by_name(cls, name) -> Feature:
+    def get_feature_by_name(cls, name) -> FeatureContent:
         """Find feature
 
         Find registered feature by name.
@@ -195,7 +233,7 @@ class FeatureFlagConfiguration:
 
         if not cls.is_registered(name):
             try:
-                feature = Feature(name=name, **feature_content)
+                feature = FeatureContent(name=name, **feature_content)
             except TypeError as caught_exception:
                 raise WrongFeatureSchema(
                     "Feature content schema not valid. Perhaps wrong keywords have been used."
@@ -224,13 +262,13 @@ class FeatureFlagConfiguration:
         cls._registered_features = []
 
     @property
-    def feature_name(self) -> str:
+    def feature_name(self) -> str | None:
         """Return feature name
 
         Returns:
             str: Feature name
         """
-        return self._name
+        return self.feature.name
 
     @property
     def feature_active(self) -> str:
@@ -239,10 +277,10 @@ class FeatureFlagConfiguration:
         Returns:
             str: Activation: on|off
         """
-        return self._activation
+        return self.feature.activation
 
     @property
-    def registered_features(self) -> list[Feature]:
+    def registered_features(self) -> list[FeatureContent]:
         """Return list of registered features
 
         Returns:
@@ -251,17 +289,18 @@ class FeatureFlagConfiguration:
         return self._registered_features
 
     @property
-    def configuration(self) -> dict:
+    def configuration(self) -> dict | None:
         """Return configuration
 
         Returns:
             dict: Configuration
         """
-        return self._configuration
+        return self.feature.configuration
 
     @configuration.setter
     def configuration(self, new_configuration):
         self._load_configuration(configuration=new_configuration)
+        self.feature.configuration = new_configuration
 
     @property
     def configuration_path(self) -> pathlib.Path | None:
@@ -270,9 +309,10 @@ class FeatureFlagConfiguration:
         Returns:
             pathlib.Path | None: Path to configuration file
         """
-        return self._configuration_path
+        return self.feature.configuration_path
 
     @configuration_path.setter
     def configuration_path(self, path: pathlib.Path):
-        self._load_configuration_from_file(path=path)
-        self._configuration_path = path
+        configuration = self._load_configuration_from_file(path=path)
+        self.feature.configuration_path = path
+        self.feature.configuration = configuration

@@ -5,6 +5,7 @@ import pathlib
 from typing import Any, Callable
 
 from fastfeatureflag.errors import CannotRunShadowWithoutFunctionError
+from fastfeatureflag.feature_content import FeatureContent
 from fastfeatureflag.feature_flag_configuration import FeatureFlagConfiguration
 from fastfeatureflag.shadow_configuration import ShadowConfiguration
 
@@ -26,22 +27,23 @@ class feature_flag:  # pylint: disable=invalid-name
         **kwargs,
     ):
         super().__init__()
-        self.activation = activation
-        self.response = response
-        self.name = name
-        self.configuration = configuration
-        self.configuration_path = configuration_path
         self.kwargs = kwargs
 
+        self._feature = FeatureContent(
+            activation=activation,
+            name=name,
+            response=response,
+            configuration=configuration,
+            configuration_path=configuration_path,
+        )
+        # TODO: COnfigure flag here, set func in __call__
+
     def __call__(self, func):
+        self._feature.func = func
+
         return FeatureFlagConfiguration(
-            func=func,
-            activation=self.activation,
-            response=self.response,
-            name=self.name,
-            feature_configuration=self.configuration,
-            feature_configuration_path=self.configuration_path,
-            **self.kwargs,
+            feature=self._feature,
+            **self.kwargs,  # TODO: shadow? Jkwargs? needed?
         )
 
     def shadow(self, run: Callable | str, *args, **kwargs):
@@ -50,7 +52,7 @@ class feature_flag:  # pylint: disable=invalid-name
         Args:
             run (function): The alternative method which should be called.
         """
-        if self.activation == "on":
+        if self._feature.activation == "on":
             return self
 
         if isinstance(run, str):

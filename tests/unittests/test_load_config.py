@@ -6,8 +6,8 @@ import toml
 
 from fastfeatureflag.config import TestConfig
 from fastfeatureflag.errors import WrongFeatureSchema
+from fastfeatureflag.feature_content import FeatureContent
 from fastfeatureflag.feature_flag import feature_flag
-from fastfeatureflag.feature_schema import Feature
 
 
 def test_load_config_by_dict(decorated_stub):
@@ -45,8 +45,10 @@ def test_load_config_by_file(decorated_stub):
         name="test_feature_off", configuration_path=TestConfig().PATH_TO_CONFIGURATION
     )
     test_function = test_function(decorated_stub)
-    assert test_function.configuration_path == TestConfig().PATH_TO_CONFIGURATION
-    assert test_function.configuration == TestConfig().DEFAULT_CONFIG
+    assert (
+        test_function.feature.configuration_path == TestConfig().PATH_TO_CONFIGURATION
+    )
+    assert test_function.feature.configuration == TestConfig().DEFAULT_CONFIG
 
     test_function.clean()
 
@@ -54,11 +56,13 @@ def test_load_config_by_file(decorated_stub):
 def test_update_config_by_file(decorated_stub):
     test_function = feature_flag(name="test_feature_off")
     test_function = test_function(decorated_stub)
-    assert test_function.configuration is None
+    assert test_function.feature.configuration is None
 
     test_function.configuration_path = TestConfig().PATH_TO_CONFIGURATION
-    assert test_function.configuration_path == TestConfig().PATH_TO_CONFIGURATION
-    assert test_function.configuration == TestConfig().DEFAULT_CONFIG
+    assert (
+        test_function.feature.configuration_path == TestConfig().PATH_TO_CONFIGURATION
+    )
+    assert test_function.feature.configuration == TestConfig().DEFAULT_CONFIG
 
     test_function.clean()
 
@@ -87,11 +91,11 @@ def test_register_feature_from_config(decorated_stub):
     test_function = feature_flag(
         name="test_feature_off", configuration=TestConfig().DEFAULT_CONFIG
     )
-    test_function = test_function(decorated_stub)
+    test_function = test_function(None)
 
     assert len(test_function.registered_features) == 4
     assert (
-        Feature(**{"name": "test_feature_off", "activation": "off"})
+        FeatureContent(**{"name": "test_feature_off", "activation": "off"})
         in test_function.registered_features
     )
 
@@ -103,17 +107,10 @@ def test_register_feature_from_config_file(decorated_stub, default_config):
     test_function = feature_flag(
         name="test_feature_off", configuration_path=default_config_path
     )
+
     test_function = test_function(decorated_stub)
     assert len(test_function.registered_features) == 4
-    assert (
-        Feature(
-            **{
-                "name": "test_feature_off",
-                "activation": "off",
-            }
-        )
-        in test_function.registered_features
-    )
+    assert test_function.get_feature_by_name("test_feature_off")
 
     test_function.clean()
 
@@ -123,15 +120,7 @@ def test_register_feature_with_setting_new_config(decorated_stub):
     test_function = test_function(decorated_stub)
 
     assert len(test_function.registered_features) == 1
-    assert (
-        Feature(
-            **{
-                "name": "test_feature_off",
-                "activation": "off",
-            }
-        )
-        in test_function.registered_features
-    )
+    assert test_function.get_feature_by_name("test_feature_off")
 
     test_function.configuration = TestConfig().DEFAULT_CONFIG
     assert len(test_function.registered_features) == 4

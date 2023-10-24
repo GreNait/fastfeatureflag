@@ -68,8 +68,8 @@ def test_call_with_response_but_deactivated_feature(decorated_stub):
 def test_feature_active(decorated_stub):
     test_function = feature_flag(activation="off")
     test_function = test_function(decorated_stub)
-    assert test_function.feature_active == "off"
+    assert test_function.feature.activation == "off"
 
     test_function = feature_flag(activation="on")
     test_function = test_function(decorated_stub)
-    assert test_function.feature_active == "on"
+    assert test_function.feature.activation == "on"
