@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "fastfeatureflag"
-version = "0.2.0"
+version = "0.3.0"
 description = "light-weight feature flags"
 authors = ["GreNait"]
 readme = "README.md"

@@ -1,3 +1,18 @@
+## 0.3.0 (2023-10-25)
+
+### Feat
+
+- **feature_flag**: use `shadow` to call a different function/method
+- **all**: feature flag configuration by file
+
+### Fix
+
+- **feature_flag_configuration**: updating and synchronising features
+
+### Refactor
+
+- **all/***: reduces complexity
+
 ## 0.2.0 (2023-09-02)
 
 ### Feat
