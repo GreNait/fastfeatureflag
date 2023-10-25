@@ -1,3 +1,5 @@
+from urllib import response
+
 import pytest
 
 from fastfeatureflag.feature_content import FeatureContent
@@ -209,3 +211,16 @@ def test_two_methods_one_feature_both_response():
 
     test_method_1.clean()
     test_method_2.clean()
+
+
+def test_update_feature():
+    @feature_flag("off", name="test", response="test_method_1")
+    def test_method_1():
+        return True
+
+    assert test_method_1() == "test_method_1"
+
+    test_method_1.update(activation="off", name="test", response="re-configured")
+    assert test_method_1() == "re-configured"
+
+    test_method_1.clean()

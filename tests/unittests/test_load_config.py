@@ -198,3 +198,19 @@ def test_config_has_wrong_schema(decorated_stub):
             name="wrong_schema", configuration=TestConfig().WRONG_SCHEMA
         )
         test_function = test_function(decorated_stub)
+
+
+def test_reconfiguration(decorated_stub):
+    @feature_flag(name="test_reconfiguration", response="I am deactivated")
+    def broken_feature():
+        return "I am broken"
+
+    assert broken_feature() == "I am deactivated"
+
+    broken_feature.configuration = {
+        "test_reconfiguration": {"activation": "off", "response": "I am re-configured"}
+    }
+    assert broken_feature() == "I am re-configured"
+    assert broken_feature.configuration == {
+        "test_reconfiguration": {"activation": "off", "response": "I am re-configured"}
+    }

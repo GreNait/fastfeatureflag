@@ -73,3 +73,14 @@ def test_feature_active(decorated_stub):
     test_function = feature_flag(activation="on")
     test_function = test_function(decorated_stub)
     assert test_function.feature.activation == "on"
+
+
+def test_update_feature():
+    @feature_flag("off", response="test_method")
+    def test_method():
+        return True
+
+    assert test_method() == "test_method"
+
+    test_method.update(activation="off", response="re-configured")
+    assert test_method() == "re-configured"

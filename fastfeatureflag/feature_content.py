@@ -1,5 +1,5 @@
 import pathlib
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from typing import Callable
 
 
@@ -12,3 +12,7 @@ class FeatureContent:
     func: Callable | None = None
     configuration: dict | None = None
     configuration_path: pathlib.Path | None = None
+
+    def update(self, **kwargs):
+        """Update feature"""
+        self.__dict__ = {**self.__dict__, **kwargs}

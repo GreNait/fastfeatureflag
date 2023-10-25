@@ -155,7 +155,7 @@ If you have several methods/functions you want to group, use a name for that fea
     'Not finished yet'
     ```
 
-These methods are now registered as a feature and changing the activation in on feature flag changes the activation for all flagged objects.
+These methods are now registered as a feature and changing the activation to "on" in the feature flag changes the activation for all flagged objects.
 
 ### Active
 
@@ -192,7 +192,69 @@ Activate the feature by changing from `off` to `on` in the activation.
 
 !!! note "The first activation wins"
 
-    If you have several objects flagged with under one name and different `activations`, then the first activation wins. The first flag registers the name and activation. Any other flag will not change the already registered feature.
+    If you have several objects flagged with with the same name and different `activations`, then the first activation wins. The first flag registers the name and activation. Any other flag will not change the already registered feature.
+
+    ??? tip "Cleaning the feature register"
+
+        It is possible to clean all already registered features and update the configuration of all features.
+
+        ```python
+        from fastfeatureflag.feature_flag import feature_flag
+        import pprint
+        pp = pprint.PrettyPrinter(indent=4)
+
+        @feature_flag(name="test_clean_register", response="I am deactivated")
+        def broken_feature():
+            return "I am broken"
+
+        pp.pprint(broken_feature())
+
+        pp.pprint(broken_feature.registered_features)
+        broken_feature.clean()
+
+        pp.pprint(broken_feature.registered_features)
+        pp.pprint(broken_feature())
+        ```
+        Output:
+        ```console
+        'I am deactivated'
+        [   FeatureContent(activation='off',
+                        name='test_clean_register',
+                        response=None,
+                        shadow=None,
+                        func=<function broken_feature at 0x7fea25881ea0>,
+                        configuration=None,
+                        configuration_path=None)]
+        []
+        'I am deactivated'
+        ```
+
+        Be aware, that this only "unregister" a feature. It does not deactivate it. Meaning, e.g. a configured response is still forwarded.
+        If you want to change and register new features dynamically, you can provide the feature configuration:
+
+        ```python
+        from fastfeatureflag.feature_flag import feature_flag
+        import pprint
+        pp = pprint.PrettyPrinter(indent=4)
+
+        @feature_flag(name="test_clean_register", response="I am deactivated")
+        def broken_feature():
+            return "I am broken"
+
+        pp.pprint(broken_feature())
+
+        configuration = {"test_clean_register" : {"activation":"off", "response":"I am re-configured"}}
+        broken_feature.configuration = configuration
+        pp.pprint(broken_feature.configuration)
+
+        broken_feature()
+        ```
+        Output:
+        ```console
+        'I am deactivated'
+        {'test_clean_register': {'activation': 'off', 'response': 'I am re-configured'}}
+        'I am re-configured'
+        ```
 
 !!! tip "Every flagged method has its own unique response"
 

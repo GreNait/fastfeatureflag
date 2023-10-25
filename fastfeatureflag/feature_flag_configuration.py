@@ -198,6 +198,35 @@ class FeatureFlagConfiguration:
         shadow_run = ShadowConfiguration(func=run, *args, **kwargs)
         return shadow_run.run()
 
+    def update(
+        self,
+        activation: str = "off",
+        response: Any | None = None,
+        name: str | None = None,
+    ):
+        """Update feature(s).
+
+        Args:
+            activation (str, optional): Activation of feature. Defaults to "off".
+            response (Any | None, optional): Response of decorated function. Defaults to None.
+            name (str | None, optional): Name of the feature. Defaults to None.
+        """
+        self.feature.update(activation=activation, name=name, response=response)
+
+        if name:
+            if self.is_registered(self.feature.name):
+                registered_feature = self.get_feature_by_name(self.feature.name)
+                registered_feature.update(
+                    activation=activation, name=name, response=response
+                )
+            else:
+                self.register(self.feature.name or "no name provided", self.feature)
+
+    def _sync_feature(self):
+        registered_feature = self.get_feature_by_name(self.feature.name)
+        if self.feature.__dict__ != registered_feature.__dict__:
+            self.feature.__dict__ = registered_feature.__dict__
+
     @classmethod
     def get_feature_by_name(cls, name) -> FeatureContent:
         """Find feature
@@ -299,7 +328,9 @@ class FeatureFlagConfiguration:
 
     @configuration.setter
     def configuration(self, new_configuration):
+        self.clean()
         self._load_configuration(configuration=new_configuration)
+        self._sync_feature()
         self.feature.configuration = new_configuration
 
     @property

@@ -6,11 +6,11 @@ edit_uri: edit/trunk/docs/
 nav:
   - Home: index.md
   - quickstart.md
-  - Development process:
-    - development_process/workflow.md
-    - development_process/pre_commit_pipeline.md
-    - development_process/dagger_pipeline.md
-  - features/features.md
+  # - Development process:
+  #   - development_process/workflow.md
+  #   - development_process/pre_commit_pipeline.md
+  #   - development_process/dagger_pipeline.md
+  # - features/features.md
   - roadmap.md
   - Changelog: changelog.md
 
