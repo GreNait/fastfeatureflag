@@ -123,6 +123,9 @@ class FeatureFlagConfiguration:
             registered_feature.func = feature.func
             feature.activation = registered_feature.activation
 
+            if registered_feature.response:
+                feature.response = registered_feature.response
+
             if not feature.shadow:
                 feature.shadow = registered_feature.shadow
 
@@ -219,6 +222,7 @@ class FeatureFlagConfiguration:
                 registered_feature.update(
                     activation=activation, name=name, response=response
                 )
+                registered_feature.func = self.feature.func
             else:
                 self.register(self.feature.name or "no name provided", self.feature)
 
@@ -330,7 +334,7 @@ class FeatureFlagConfiguration:
     def configuration(self, new_configuration):
         self.clean()
         self._load_configuration(configuration=new_configuration)
-        self._sync_feature()
+        self.__sync_features(feature=self.feature)
         self.feature.configuration = new_configuration
 
     @property
@@ -344,6 +348,5 @@ class FeatureFlagConfiguration:
 
     @configuration_path.setter
     def configuration_path(self, path: pathlib.Path):
-        configuration = self._load_configuration_from_file(path=path)
+        self.configuration = self._load_configuration_from_file(path=path)
         self.feature.configuration_path = path
-        self.feature.configuration = configuration

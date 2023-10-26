@@ -5,12 +5,14 @@ edit_uri: edit/trunk/docs/
 
 nav:
   - Home: index.md
-  - quickstart.md
-  # - Development process:
-  #   - development_process/workflow.md
-  #   - development_process/pre_commit_pipeline.md
-  #   - development_process/dagger_pipeline.md
-  # - features/features.md
+  - Quickstart:
+    - quickstart/quickstart_tldr.ipynb
+    - quickstart/quickstart.md
+  - Features:
+    - features/feature_flag.md
+    - features/feature_flag_code.ipynb
+    - features/configuration.md
+    - features/shadow.md
   - roadmap.md
   - Changelog: changelog.md
 
@@ -36,6 +38,10 @@ theme:
 
 plugins:
   - autorefs
+  - mkdocs-jupyter:
+      execute: true
+      allow_errors: true
+      include_source: True
   - mkdocstrings
   - git-revision-date-localized:
       enable_creation_date: true

@@ -26,6 +26,22 @@ class feature_flag:  # pylint: disable=invalid-name
         configuration_path: pathlib.Path | None = None,
         **kwargs,
     ):
+        """Initialize feature
+
+        Initialize feature and if not registered, start the register process.
+
+        Args:
+            activation (str, optional): The activation of the feature `on|off`.
+                Defaults to "off".
+            response (Any | None, optional): What should an deactivated feature return.
+                Defaults to None.
+            name (str | None, optional): Name of the feature. Used for grouping features together.
+                Defaults to None.
+            configuration (dict | None, optional): Use a dict for configuring features.
+                Defaults to None.
+            configuration_path (pathlib.Path | None, optional): A path to a configuration toml.
+                Defaults to None.
+        """
         super().__init__()
         self.kwargs = kwargs
 
@@ -62,7 +78,7 @@ class feature_flag:  # pylint: disable=invalid-name
         if run is None or not callable(run):
             raise CannotRunShadowWithoutFunctionError() from None
 
-        def decorated_function(func: Callable):
+        def decorated_function(func: Callable):  # pylint: disable=unused-argument
             """Inner wrapper for the decorated function.
 
             Args:

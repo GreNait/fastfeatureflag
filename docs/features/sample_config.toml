@@ -1,0 +1,3 @@
+[grouped_feature]
+activation="off"
+response="Response defined by toml"

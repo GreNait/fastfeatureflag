@@ -1,53 +1,8 @@
-# Quickstart
+# &#x1F4D6; Quickstart
 
-# TL;DR
+## TL;DR
 
-```python
-from fastfeatureflag.feature_flag import feature_flag
-
-@feature_flag(activation="off", response="I responded")
-def not_yet_finished_feature():
-    return True
-
-print(not_yet_finished_feature())
-I responded
-
-@feature_flag("on")
-def not_yet_finished_feature():
-    return True
-not_yet_finished_feature()
-True
-
-@feature_flag("off", name="awesome_feature", response="Not finished yet")
-def awesome_feature_1():
-    return "I am feature 1"
-
-@feature_flag(name="awesome_feature", response="Not finished yet")
-def awesome_feature_2():
-    return "I am feature 2"
-
-awesome_feature_1()
-awesome_feature_2()
-'Not finished yet'
-
-@feature_flag("on", name="awesome_feature")
-def awesome_feature_1():
-    return "I am feature 1"
-
-@feature_flag("off", name="awesome_feature")
-def awesome_feature_2():
-    return "I am feature 2"
-
-awesome_feature_1()
-awesome_feature_2()
----------------------------------------------------------------------------
-NotImplementedError                       Traceback (most recent call last)
-Cell In[10], line 11
-      7 @feature_flag("off", name="awesome_feature")
-      8 def awesome_feature_2():
-      9     return "I am feature 2"
----> 11 awesome_feature_1()
-```
+[&#x1F5B1; Click here if you want to see code only](quickstart_tldr.ipynb)
 
 ## Import feature flag
 
@@ -74,6 +29,8 @@ By adding `feature_flag()` to a method, the method will raise an `NotImplemented
         ...
     ```
 
+By adding the feature without any parameters, it will disable the method/function/class.
+
 ??? note "You can specify the activation of a feature flag"
 
     ```python
@@ -81,8 +38,6 @@ By adding `feature_flag()` to a method, the method will raise an `NotImplemented
     ```
 
     `feature_flag()` equals `feature_flag("off")`
-
-By adding the feature without any parameters, it will disable the method/function/class.
 
 ## Respond even if deactive
 
@@ -124,7 +79,7 @@ If you want a flagged method/function/class to be active, configure the flag to 
 
 ## Name a feature
 
-### Deactive
+### Deactivated
 
 If you have several methods/functions you want to group, use a name for that feature.
 
@@ -155,9 +110,9 @@ If you have several methods/functions you want to group, use a name for that fea
     'Not finished yet'
     ```
 
-These methods are now registered as a feature and changing the activation to "on" in the feature flag changes the activation for all flagged objects.
+These methods are now registered as a feature and changing the activation to "on" in the (first appearing) feature flag, changes the activation for all flagged objects which are grouped by name.
 
-### Active
+### Activated
 
 !!! tip "Typically the `feature_flag(name="named_feature")` flag would assume an `off` activation. However, as a group they share the activation."
 
@@ -274,7 +229,9 @@ activation="on"
 activation="off"
 ```
 
-This file provides you a central location to switch off/on the features you need. Another great option is the use of environment variables within the activation.
+This file provides you a central location to switch off/on the features you need.
+
+Another great option is the use of environment variables within the activation.
 
 ```toml title="fastfeatureflag_config.toml"
 [feature_1]
@@ -287,8 +244,10 @@ By providing the name of the environment variable it is possible to read their s
 export FEATURE_1 = "on"
 ```
 
-In combination with `.env` files, you can save and specify the features for your local use case. Provide different `.env` files or other means of environment variables to easily handle feature flags within a `CI/CD` pipeline too.
+In combination with a `.env` file, you can save and specify the features for your local use case. Provide different `.env` files or other means of environment variables to easily handle feature flags within a `CI/CD` pipeline etc.
 
 ??? tip "Environment variable standard"
 
-    Typically, environment variables are written in `upper case`. However, the feature flag system searches for every word as an environment variable. Take also care, that no environment variable with the key words `on` and `off` have been defined.
+    Typically, environment variables are written in `upper case`. However, the feature flag system searches for every word as an environment variable.
+
+    !!! warning "Take also care, that no environment variable with the key words `on` and `off` have been defined."

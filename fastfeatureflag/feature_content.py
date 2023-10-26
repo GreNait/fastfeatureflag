@@ -1,10 +1,17 @@
+"""Feature content."""
 import pathlib
-from dataclasses import dataclass, replace
+from dataclasses import dataclass
 from typing import Callable
 
 
+# pylint: disable=too-many-instance-attributes
 @dataclass
 class FeatureContent:
+    """Feature content.
+
+    Defined feature by provided attributes.
+    """
+
     activation: str
     name: str | None
     response: str | None = None

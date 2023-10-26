@@ -1,3 +1,7 @@
+"""Defining shadow configurations."""
+
+
+# pylint: disable=too-few-public-methods
 class ShadowConfiguration:
     """Shadow mode configuration"""
 
