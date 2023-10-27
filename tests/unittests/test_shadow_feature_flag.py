@@ -29,17 +29,16 @@ def test_shadow_run_method():
 
 
 def test_shadow_run_method_with_arguments():
-    test_function = feature_flag().shadow(
-        alternative_method_with_arguments, "the_argument_one"
-    )
+    test_function = feature_flag().shadow(alternative_method_with_arguments)
     test_function = test_function(original_method)
-    assert test_function() == "alternative_method_the_argument_one"
+    assert test_function("the_argument_one") == "alternative_method_the_argument_one"
 
-    test_function = feature_flag().shadow(
-        run=alternative_method_with_arguments, argument_one="the_argument_one"
-    )
+    test_function = feature_flag().shadow(run=alternative_method_with_arguments)
     test_function = test_function(original_method)
-    assert test_function() == "alternative_method_the_argument_one"
+    assert (
+        test_function(argument_one="the_argument_one")
+        == "alternative_method_the_argument_one"
+    )
 
 
 def test_shadow_run_empty_method():

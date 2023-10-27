@@ -33,6 +33,7 @@ black = "^23.7.0"
 pytest-asyncio = "^0.21.1"
 twine = "^4.0.2"
 mkdocs-jupyter = "^0.24.6"
+ipytest = "^0.13.3"
 
 [tool.commitizen]
 name = "cz_conventional_commits"

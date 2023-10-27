@@ -9,10 +9,11 @@ nav:
     - quickstart/quickstart_tldr.ipynb
     - quickstart/quickstart.md
   - Features:
-    - features/feature_flag.md
     - features/feature_flag_code.ipynb
-    - features/configuration.md
-    - features/shadow.md
+    - features/feature_flag_reference.md
+    - features/shadow_code.ipynb
+    - features/shadow_reference.md
+    - features/configuration_code.ipynb
   - roadmap.md
   - Changelog: changelog.md
 

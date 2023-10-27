@@ -4,7 +4,7 @@ import os
 import pathlib
 from typing import Any
 
-import toml
+import toml  # pylint: disable=import-error
 
 from fastfeatureflag.config import Config
 from fastfeatureflag.errors import (
@@ -121,7 +121,23 @@ class FeatureFlagConfiguration:
         if self.is_registered(name=feature.name):
             registered_feature = self.get_feature_by_name(feature.name)
             registered_feature.func = feature.func
-            feature.activation = registered_feature.activation
+
+            if (  # TODO: exlude to seperate method
+                registered_feature.activation == "off"
+                or os.environ.get(registered_feature.activation) == "off"
+            ):
+                feature.activation = "off"
+
+            elif (
+                registered_feature.activation == "on"
+                or os.environ.get(registered_feature.activation) == "on"
+            ):
+                feature.activation = "on"
+
+            else:
+                raise KeyError(
+                    f"Wrong key. Possible keys: on|off, got: {registered_feature.activation}"
+                )
 
             if registered_feature.response:
                 feature.response = registered_feature.response

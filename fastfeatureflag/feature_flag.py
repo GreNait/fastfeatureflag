@@ -62,7 +62,7 @@ class feature_flag:  # pylint: disable=invalid-name
             **self.kwargs,  # TODO: shadow? Jkwargs? needed?
         )
 
-    def shadow(self, run: Callable | str, *args, **kwargs):
+    def shadow(self, run: Callable | str):
         """Shadow feature
 
         Args:
@@ -78,7 +78,9 @@ class feature_flag:  # pylint: disable=invalid-name
         if run is None or not callable(run):
             raise CannotRunShadowWithoutFunctionError() from None
 
-        def decorated_function(func: Callable):  # pylint: disable=unused-argument
+        def decorated_function(
+            func: Callable, *args, **kwargs
+        ):  # pylint: disable=unused-argument
             """Inner wrapper for the decorated function.
 
             Args:
@@ -91,3 +93,24 @@ class feature_flag:  # pylint: disable=invalid-name
             return shadow_run.run
 
         return decorated_function
+
+    def pytest(self, passing: bool = True):
+        """Enabling feature flag with pytest.
+
+        Pytest expects functions (not callables). This method specifies, how a test
+        should behave. Pass/Fail. Or if the feature is "on" return the original test.
+
+        Args:
+            passing (bool, optional): Outcome of the assumed test. Defaults to True.
+        """
+
+        def wrapper(func):
+            def inner():
+                assert passing
+
+            if self._feature.activation == "on":
+                return func
+
+            return inner
+
+        return wrapper

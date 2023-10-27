@@ -19,10 +19,10 @@ class ShadowConfiguration:
         self.args = args
         self.kwargs = kwargs
 
-    def run(self):
+    def run(self, *args, **kwargs):
         """Runs the alternative method
 
         Returns:
             Any: Returns the output from the provided alternative method.
         """
-        return self.func(*self.args, **self.kwargs)
+        return self.func(*args, **kwargs)

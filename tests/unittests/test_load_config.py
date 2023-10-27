@@ -184,12 +184,9 @@ def test_wrong_keywords_value_in_config(decorated_stub):
         **TestConfig().DEFAULT_CONFIG
     )
     test_function = feature_flag(name="feature_key_value_wrong", configuration=config)
-    test_function = test_function(decorated_stub)
 
     with pytest.raises(KeyError):
-        test_function()
-
-    test_function.clean()
+        test_function = test_function(decorated_stub)
 
 
 def test_config_has_wrong_schema(decorated_stub):
