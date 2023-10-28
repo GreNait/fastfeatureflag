@@ -19,10 +19,26 @@ class ShadowConfiguration:
         self.args = args
         self.kwargs = kwargs
 
-    def run(self, *args, **kwargs):
-        """Runs the alternative method
+    def __call__(self, *args, **kwargs):
+        """Runs the alternative method.
+
+        Runs the alternative method and together with __get__ creates a
+        decorator class.
 
         Returns:
             Any: Returns the output from the provided alternative method.
         """
+        return self.func(*args, **kwargs)
+
+    def __get__(self, instance, owner):
+        """
+        Fix: make our decorator class a decorator, so that it also works to
+        decorate instance methods.
+        https://stackoverflow.com/a/30105234/10237506
+        """
+        from functools import partial
+
+        return partial(self.__call__, instance)
+
+    def run(self, *args, **kwargs):
         return self.func(*args, **kwargs)

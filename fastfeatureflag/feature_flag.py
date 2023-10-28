@@ -2,6 +2,7 @@
 
 import importlib
 import pathlib
+from functools import partial
 from typing import Any, Callable
 
 from fastfeatureflag.errors import CannotRunShadowWithoutFunctionError
@@ -65,7 +66,6 @@ class feature_flag:  # pylint: disable=invalid-name
         decorate instance methods.
         https://stackoverflow.com/a/30105234/10237506
         """
-        from functools import partial
 
         return partial(self.__call__, instance)
 
@@ -77,7 +77,7 @@ class feature_flag:  # pylint: disable=invalid-name
             **self.kwargs,  # TODO: shadow? Jkwargs? needed?
         )
 
-    def shadow(self, run: Callable | str):
+    def shadow(self, run: Callable | str, *args, **kwargs):
         """Shadow feature
 
         Args:
@@ -105,7 +105,8 @@ class feature_flag:  # pylint: disable=invalid-name
                 run: Function running the alternative function.
             """
             shadow_run = ShadowConfiguration(run, *args, **kwargs)
-            return shadow_run.run
+            return shadow_run
+            # return shadow_run.run
 
         return decorated_function
 

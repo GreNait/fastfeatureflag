@@ -2,6 +2,7 @@
 import importlib
 import os
 import pathlib
+from functools import partial
 from typing import Any
 
 import toml  # pylint: disable=import-error
@@ -66,8 +67,6 @@ class FeatureFlagConfiguration:
         decorate instance methods.
         https://stackoverflow.com/a/30105234/10237506
         """
-        from functools import partial
-
         return partial(self.__call__, instance)
 
     def __check_name(
