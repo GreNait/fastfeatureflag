@@ -183,10 +183,11 @@ def test_wrong_keywords_value_in_config(decorated_stub):
         **{"feature_key_value_wrong": {"activation": "wrong_value"}},
         **TestConfig().DEFAULT_CONFIG
     )
-    test_function = feature_flag(name="feature_key_value_wrong", configuration=config)
 
     with pytest.raises(KeyError):
-        test_function = test_function(decorated_stub)
+        test_function = feature_flag(
+            name="feature_key_value_wrong", configuration=config
+        )
 
 
 def test_config_has_wrong_schema(decorated_stub):

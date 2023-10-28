@@ -14,6 +14,8 @@ nav:
     - features/shadow_code.ipynb
     - features/shadow_reference.md
     - features/configuration_code.ipynb
+    - features/pytest_code.ipynb
+    - features/pytest_code_reference.md
   - roadmap.md
   - Changelog: changelog.md
 

@@ -54,7 +54,22 @@ class feature_flag:  # pylint: disable=invalid-name
         )
         # TODO: COnfigure flag here, set func in __call__
 
-    def __call__(self, func):
+        FeatureFlagConfiguration(
+            feature=self._feature,
+            **self.kwargs,  # TODO: shadow? Jkwargs? needed?
+        )
+
+    def __get__(self, instance, owner):
+        """
+        Fix: make our decorator class a decorator, so that it also works to
+        decorate instance methods.
+        https://stackoverflow.com/a/30105234/10237506
+        """
+        from functools import partial
+
+        return partial(self.__call__, instance)
+
+    def __call__(self, func, *args, **kwargs):
         self._feature.func = func
 
         return FeatureFlagConfiguration(

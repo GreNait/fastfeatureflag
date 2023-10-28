@@ -60,6 +60,16 @@ class FeatureFlagConfiguration:
 
         return self._decorated_function(*args, **kwargs)
 
+    def __get__(self, instance, owner):
+        """
+        Fix: make our decorator class a decorator, so that it also works to
+        decorate instance methods.
+        https://stackoverflow.com/a/30105234/10237506
+        """
+        from functools import partial
+
+        return partial(self.__call__, instance)
+
     def __check_name(
         self,
         feature: FeatureContent,
