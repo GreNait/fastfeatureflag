@@ -1,3 +1,10 @@
+## 0.4.0 (2023-10-28)
+
+### Feat
+
+- **feature_flag**: enable `self` within decorated functions
+- **feature_flag**: pytest compatibility via `.pytest()`
+
 ## 0.3.0 (2023-10-25)
 
 ### Feat

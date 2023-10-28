@@ -16,6 +16,10 @@ nav:
     - features/configuration_code.ipynb
     - features/pytest_code.ipynb
     - features/pytest_code_reference.md
+  - Usecases:
+    - use_cases/broken_feature.ipynb
+    - use_cases/unfinished_new_feature.ipynb
+    - use_cases/refactor_feature.ipynb
   - roadmap.md
   - Changelog: changelog.md
 
