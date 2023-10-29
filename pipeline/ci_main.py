@@ -60,7 +60,7 @@ async def pylint(runner):
     rate_end = rate_start + pylint_result[rate_start:].find("/")
     rate = pylint_result[rate_start:rate_end]
 
-    if float(rate) < 9:
+    if float(rate) < 9.5:
         print("pylint failed")
 
     path_to_badges = pathlib.Path().cwd() / "docs" / "badges"
