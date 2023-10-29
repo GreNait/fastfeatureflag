@@ -10,10 +10,6 @@ repos:
         args: ['--unsafe']
     -   id: check-added-large-files
     -   id: check-toml
--   repo: https://gitlab.com/smop/pre-commit-hooks
-    rev: 'v1.0.0'
-    hooks:
-    -   id: check-poetry
 -   repo: https://github.com/PyCQA/isort
     rev: '5.12.0'
     hooks:

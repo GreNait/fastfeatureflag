@@ -1,12 +1,12 @@
 [tool.poetry]
 name = "fastfeatureflag"
-version = "0.4.0"
+version = "0.4.1"
 description = "light-weight feature flags"
 authors = ["GreNait"]
 license="MIT"
 repository="https://github.com/GreNait/fastfeatureflag"
 homepage="https://grenait.github.io/fastfeatureflag/"
-readme =  ["README", "LICENSE" ]
+readme =  ["README.md"]
 
 [tool.poetry.dependencies]
 python = "^3.10"
@@ -59,7 +59,6 @@ tag_format = "$version"
 version_scheme = "semver"
 version_provider = "poetry"
 update_changelog_on_bump = true
-major_version_zero = true
 annotated_tag = true
 
 [tool.mypy]

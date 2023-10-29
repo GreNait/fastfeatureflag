@@ -45,7 +45,7 @@ async def setup_runner(client):
             client.host().directory(".", exclude=[".venv", ".vscode"]),
         )
         .with_workdir("/src")
-        .with_exec(["poetry", "install"])
+        .with_exec(["poetry", "install", "--with=dev,test"])
     )
 
 
